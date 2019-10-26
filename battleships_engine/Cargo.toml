@@ -1,0 +1,11 @@
+[package]
+name = "battleships_engine"
+version = "0.1.0"
+authors = ["Axel Cocat <ax.cocat@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+q1tsim = "0.4.0"
+serde = "1.0.101"
+serde_derive = "1.0.101"
+serde_json = "1.0.41"
