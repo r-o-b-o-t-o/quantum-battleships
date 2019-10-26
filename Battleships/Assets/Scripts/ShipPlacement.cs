@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ShipPlacement : MonoBehaviourSingleton<ShipPlacement>
+public class ShipPlacement : Singleton<ShipPlacement>
 {
     public Action<Ship> onShipAdded;
 

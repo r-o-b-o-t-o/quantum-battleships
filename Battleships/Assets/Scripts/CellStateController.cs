@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CellStateController : MonoBehaviourSingleton<CellStateController>
+public class CellStateController : Singleton<CellStateController>
 {
     [SerializeField] private List<Projector> projectors;
     [SerializeField] private Material mat;

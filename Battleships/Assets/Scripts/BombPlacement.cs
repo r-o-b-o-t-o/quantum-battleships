@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BombPlacement : MonoBehaviourSingleton<BombPlacement>
+public class BombPlacement : Singleton<BombPlacement>
 {
     public System.Action<Vector2Int> onBombPlaced;
 

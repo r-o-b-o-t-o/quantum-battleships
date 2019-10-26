@@ -12,6 +12,7 @@ public class Ship : MonoBehaviour
 
     public float pitchAndRollMultiplier = 0.5f;
     public int size;
+    public int health;
     public int pivotBlockIndex;
     public string identifier => this.id;
 

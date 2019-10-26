@@ -1,12 +1,11 @@
 ﻿using System.IO;
 using System.Diagnostics;
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Engine
 {
-    public class EngineManager : MonoBehaviourSingleton<EngineManager>
+    public class EngineManager : Singleton<EngineManager>
     {
         public uint shots = 2048;
         public GameState gameState;
@@ -50,7 +49,10 @@ namespace Engine
                 this.runningUpdate = false;
                 if (this.gameState.winner > 0)
                 {
-                    this.onWin?.Invoke(this.gameState.winner - 1);
+                    MainThreadDispatcher.Instance.RunOnMainThread(() =>
+                    {
+                        this.onWin?.Invoke(this.gameState.winner - 1);
+                    });
                 }
             }
             catch (System.Exception) { }
@@ -93,6 +95,14 @@ namespace Engine
         private void SendCommand(string command)
         {
             this.process.StandardInput.WriteLine(command);
+        }
+
+        private void OnDestroy()
+        {
+            if (this.process != null && !this.process.HasExited)
+            {
+                this.process.Kill();
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class SoundController : MonoBehaviourSingleton<SoundController>
+public class SoundController : Singleton<SoundController>
 {
     public Camera cam;
 

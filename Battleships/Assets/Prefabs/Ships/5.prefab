@@ -607,6 +607,7 @@ MonoBehaviour:
   id: 5
   pitchAndRollMultiplier: 0.5
   size: 5
+  health: 1
   pivotBlockIndex: 1
 --- !u!1 &9209100734485244122
 GameObject:

@@ -4,7 +4,6 @@ extern crate serde_derive;
 use q1tsim::circuit::Circuit;
 use std::io::{ Error, ErrorKind };
 
-pub mod grid;
 pub mod ship;
 pub mod player;
 pub mod coords;
@@ -15,9 +14,9 @@ macro_rules! arr {
     ( $( $n:expr )? ) => {
         {
             $(
-                let mut array = [ 0; $n ];
+                let mut array = Vec::with_capacity($n);
                 for i in 0..$n {
-                    array[i] = i;
+                    array.push(i);
                 }
                 array
             )*
@@ -47,42 +46,41 @@ fn read_line() -> std::io::Result<String> {
 fn game_loop(query: &mut Query) -> Result<(), q1tsim::error::Error> {
     let game_state = &mut query.game_state;
 
-    const QBITS: usize = 2 + 3 + 3 + 4 + 5;
-    const CBITS: usize = QBITS;
-    let mut circuits = [ Circuit::new(QBITS, CBITS), Circuit::new(QBITS, CBITS) ];
-
     for player in 0..2 {
-        let circuit = &mut circuits[player];
-        circuit.reset_all();
+        game_state.players[player].reset_damage();
 
-        for bomb in game_state.players[(player + 1) % 2].bombs().iter() {
-            // Add a gate in the current player's circuit for each bomb the other player placed
-            match game_state.players[player].get_ship_at_pos(bomb) {
-                Some(ship) => {
-                    let bit = game_state.players[player].get_block_index_at_pos(bomb);
+        for ship_idx in 0..game_state.players[player].ships.len() {
+            let qbits: usize = game_state.players[player].ships[ship_idx].blocks.len();
+            let cbits: usize = qbits;
+            let mut circuit = Circuit::new(qbits, cbits);
+
+            for bomb in game_state.players[(player + 1) % 2].bombs.iter() {
+                // Add a gate in the current player's circuit for each bomb the other player placed
+                let ship = &game_state.players[player].ships[ship_idx];
+                if ship.contains_coords(bomb) {
+                    let bit = ship.get_block_index_at_pos(bomb);
                     let frac = 1.0_f64 / (ship.health as f64);
                     circuit.u3(frac * std::f64::consts::PI, 0.0, 0.0, bit as usize)?;
-                },
-                None => {},
+                }
             }
-        }
 
-        circuit.measure_all(&arr![QBITS])?;
-        circuit.execute(query.shots)?;
-        let result = circuit.histogram()?;
+            circuit.measure_all(&arr![qbits])?;
+            circuit.execute(query.shots)?;
+            let result = circuit.histogram()?;
 
-        game_state.players[player].reset_damage();
-        for (key, val) in result {
-            for power in find_powers_of_two(key as i32) {
-                let idx = which_power_of_two(power);
-                let dmg = ((val as f32 / query.shots as f32) * 100.0).round() as i32;
-                game_state.players[player].add_damage(idx, dmg);
+            for (key, val) in result {
+                for power in find_powers_of_two(key as i32) {
+                    let block_idx = which_power_of_two(power) as usize;
+                    let dmg = ((val as f32 / query.shots as f32) * 100.0).round() as i32;
+                    let ship = &mut game_state.players[player].ships[ship_idx];
+                    ship.add_damage(block_idx, dmg);
+                }
             }
         }
     }
 
     for (player_idx, player) in game_state.players.iter().enumerate() {
-        if player.ships().iter().all(|ship| ship.is_sinked()) {
+        if player.ships.iter().all(|ship| ship.is_sinked()) {
             game_state.winner = ((player_idx as i32 + 1) % 2) + 1
         }
     }

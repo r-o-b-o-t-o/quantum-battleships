@@ -143,6 +143,7 @@ MonoBehaviour:
   id: 3b
   pitchAndRollMultiplier: 0.8333
   size: 3
+  health: 1
   pivotBlockIndex: 1
 --- !u!1 &6029981507372543306
 GameObject:

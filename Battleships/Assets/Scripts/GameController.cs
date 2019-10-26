@@ -1,11 +1,12 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameController : MonoBehaviourSingleton<GameController>
+public class GameController : Singleton<GameController>
 {
     [System.Serializable]
     private class Player
@@ -68,6 +69,7 @@ public class GameController : MonoBehaviourSingleton<GameController>
     [SerializeField] private UI.ToggleButton toggleGridViewButton;
     [SerializeField] private TextMeshProUGUI hitText;
     [SerializeField] private Button startRoundButton;
+    [SerializeField] private Button backToMainMenuButton;
     [SerializeField] private Player[] players;
     private bool gameStarted;
 
@@ -77,6 +79,7 @@ public class GameController : MonoBehaviourSingleton<GameController>
         BombPlacement.Instance.onBombPlaced += this.OnBombAdded;
         Engine.EngineManager.Instance.onWin += this.OnWin;
         this.startRoundButton.onClick.AddListener(this.OnStartRoundClicked);
+        this.backToMainMenuButton.onClick.AddListener(this.OnBackToMainMenuClicked);
         this.toggleGridViewButton.onStateChanged += this.OnGridViewClicked;
         this.gameStarted = false;
         this.SetActivePlayer(0);
@@ -107,7 +110,7 @@ public class GameController : MonoBehaviourSingleton<GameController>
         {
             engineShip.blocks.Add(new Engine.Ship.Block(coords));
         }
-        engineShip.health = ship.size < 3 ? 1 : (ship.size < 5 ? 2 : 3);
+        engineShip.health = ship.health;
         Engine.EngineManager.Instance.gameState.players[this.activePlayer].ships.Add(engineShip);
     }
 
@@ -199,8 +202,7 @@ public class GameController : MonoBehaviourSingleton<GameController>
         watch.Start();
         yield return Engine.EngineManager.Instance.UpdateGameStateCoroutine();
         watch.Stop();
-        Debug.Log(watch.Elapsed.TotalSeconds);
-        float timeToWait = 2.0f - (float)watch.Elapsed.TotalSeconds;
+        float timeToWait = 1.0f - (float)watch.Elapsed.TotalSeconds;
         if (timeToWait > 0.0f)
         {
             yield return new WaitForSecondsRealtime(timeToWait);
@@ -208,13 +210,23 @@ public class GameController : MonoBehaviourSingleton<GameController>
 
         this.hitText.gameObject.SetActive(false);
         this.players[this.activePlayer].SetCrossesState(false);
-        this.NextPlayer();
-        this.PrepareForRoundStart();
+        if (Engine.EngineManager.Instance.gameState.winner == 0)
+        {
+            this.NextPlayer();
+            this.PrepareForRoundStart();
+        }
     }
 
     private void OnWin(int winner)
     {
         this.winText.gameObject.SetActive(true);
         this.winText.SetArguments(winner + 1);
+        this.backToMainMenuButton.gameObject.SetActive(true);
+        this.startRoundButton.gameObject.SetActive(false);
+    }
+
+    private void OnBackToMainMenuClicked()
+    {
+        SceneManager.LoadSceneAsync("MenuScene", LoadSceneMode.Single);
     }
 }

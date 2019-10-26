@@ -21,6 +21,27 @@ impl Ship {
     pub fn is_sinked(&self) -> bool {
         self.blocks.iter().all(|block| block.damage > 95)
     }
+
+    pub fn contains_coords(&self, coords: &Coords) -> bool {
+        self.blocks.iter().any(|block| block.pos == *coords)
+    }
+
+    pub fn get_block_index_at_pos(&self, pos: &Coords) -> i32 {
+        let mut idx = 0;
+
+        for block in self.blocks.iter() {
+            if block.pos == *pos {
+                return idx;
+            }
+            idx += 1;
+        }
+
+        -1
+    }
+
+    pub fn add_damage(&mut self, block_idx: usize, damage: i32) {
+        self.blocks[block_idx].damage += damage;
+    }
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
