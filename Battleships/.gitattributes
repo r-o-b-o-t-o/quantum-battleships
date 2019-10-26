@@ -1,4 +1,6 @@
 Assets/TextMeshPro/* linguist-vendored
+Assets/StandardAssets/* linguist-vendored
+Assets/LowPolyWater_Pack/* linguist-vendored
 
 # Collapse Unity-generated files on GitHub
 *.asset             linguist-generated

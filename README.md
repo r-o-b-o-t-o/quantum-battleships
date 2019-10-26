@@ -8,7 +8,7 @@ This project is an attempt at improving *Quantum Battleships with partial NOT ga
 
 The engine is programmed in the Rust programming language using the [*q1tsim* quantum computer simulator crate](https://crates.io/crates/q1tsim).
 
-To build the engine in order to use the project, install [Rust](https://www.rust-lang.org/tools/install), then run the following commands:
+To build the engine in order to use the project, [install Rust](https://www.rust-lang.org/tools/install), then run the following commands:
 ```bash
 $ cd path/to/repository/battleships_engine
 $ cargo build --release # building in release mode will yield better performances
