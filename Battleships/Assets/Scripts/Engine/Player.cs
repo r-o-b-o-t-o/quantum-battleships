@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Engine
@@ -14,6 +15,11 @@ namespace Engine
         {
             this.ships = new List<Ship>();
             this.bombs = new List<Coords>();
+        }
+
+        public int CountSunkShips()
+        {
+            return this.ships.Where(s => s.IsSunk()).Count();
         }
     }
 }

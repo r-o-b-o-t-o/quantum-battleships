@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Engine
@@ -27,6 +28,11 @@ namespace Engine
         public Ship()
         {
             this.blocks = new List<Block>();
+        }
+
+        public bool IsSunk()
+        {
+            return this.blocks.All(block => block.damage > 95);
         }
     }
 }

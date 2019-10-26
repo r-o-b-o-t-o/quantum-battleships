@@ -78,6 +78,7 @@ public class GameController : Singleton<GameController>
         ShipPlacement.Instance.onShipAdded += this.OnShipAdded;
         BombPlacement.Instance.onBombPlaced += this.OnBombAdded;
         Engine.EngineManager.Instance.onWin += this.OnWin;
+        Engine.EngineManager.Instance.onShipSunk += this.OnShipSunk;
         this.startRoundButton.onClick.AddListener(this.OnStartRoundClicked);
         this.backToMainMenuButton.onClick.AddListener(this.OnBackToMainMenuClicked);
         this.toggleGridViewButton.onStateChanged += this.OnGridViewClicked;
@@ -123,6 +124,11 @@ public class GameController : Singleton<GameController>
             this.PrepareForRoundStart();
             this.gameStarted = true;
         }
+    }
+
+    public int GetActivePlayer()
+    {
+        return this.activePlayer;
     }
 
     private void SetActivePlayer(int idx)
@@ -228,5 +234,10 @@ public class GameController : Singleton<GameController>
     private void OnBackToMainMenuClicked()
     {
         SceneManager.LoadSceneAsync("MenuScene", LoadSceneMode.Single);
+    }
+
+    private void OnShipSunk()
+    {
+        this.hitText.text += "\nSunk!";
     }
 }

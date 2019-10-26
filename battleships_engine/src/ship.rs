@@ -18,7 +18,7 @@ impl Ship {
         self.blocks.push(Block::new(x, y));
     }
 
-    pub fn is_sinked(&self) -> bool {
+    pub fn is_sunk(&self) -> bool {
         self.blocks.iter().all(|block| block.damage > 95)
     }
 

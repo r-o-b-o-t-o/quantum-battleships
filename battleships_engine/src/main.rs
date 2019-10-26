@@ -80,7 +80,7 @@ fn game_loop(query: &mut Query) -> Result<(), q1tsim::error::Error> {
     }
 
     for (player_idx, player) in game_state.players.iter().enumerate() {
-        if player.ships.iter().all(|ship| ship.is_sinked()) {
+        if player.ships.iter().all(|ship| ship.is_sunk()) {
             game_state.winner = ((player_idx as i32 + 1) % 2) + 1
         }
     }

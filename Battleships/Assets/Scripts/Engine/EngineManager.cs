@@ -10,6 +10,7 @@ namespace Engine
         public uint shots = 2048;
         public GameState gameState;
         public System.Action<int> onWin;
+        public System.Action onShipSunk;
 
         private Process process;
         private bool runningUpdate;
@@ -45,7 +46,15 @@ namespace Engine
 
             try
             {
+                int sunkShipsBeforeUpdate = this.gameState.players[(GameController.Instance.GetActivePlayer() + 1) % 2].CountSunkShips();
                 JsonUtility.FromJsonOverwrite(e.Data, this.gameState);
+                if (this.gameState.players[(GameController.Instance.GetActivePlayer() + 1) % 2].CountSunkShips() > sunkShipsBeforeUpdate)
+                {
+                    MainThreadDispatcher.Instance.RunOnMainThread(() =>
+                    {
+                        this.onShipSunk?.Invoke();
+                    });
+                }
                 this.runningUpdate = false;
                 if (this.gameState.winner > 0)
                 {
